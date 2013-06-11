@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <time.h>
 
 void print_puzzle(uint8_t **data) {
     uint8_t i, j;
@@ -53,9 +52,11 @@ uint8_t is_valid_move(uint8_t **data, uint8_t row, uint8_t column, uint8_t val) 
     return 1;
 }
 
+uint64_t steps = 0;
 uint8_t solve_piece(uint8_t **data, uint8_t row, uint8_t column) {
     uint8_t i;
 
+    ++steps;
     if(column == 9) {
         if(row == 8)
             return 1; /* Solved the puzzle */
@@ -80,7 +81,6 @@ uint8_t solve_piece(uint8_t **data, uint8_t row, uint8_t column) {
 
 uint8_t solve_puzzle(char *filename) {
     FILE *file;
-    clock_t start;
     uint8_t f[9*9], *data[9], i, j;
     char line[128];
 
@@ -112,9 +112,8 @@ uint8_t solve_puzzle(char *filename) {
     fclose(file);
 
     /* Solve the puzzle */
-    start = clock();
     if(solve_piece(data, 0, 0)) {
-        printf("Solution (found in %f) : \n", (clock() - start) / (CLK_TCK));
+        printf("Solution (found in %lu steps) :\n", steps);
         print_puzzle(data);
         return 1;
     } else
