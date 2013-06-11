@@ -60,18 +60,18 @@ uint8_t solve_piece(uint8_t **data, uint8_t row, uint8_t column) {
         if(row == 8)
             return 1; /* Solved the puzzle */
         else {
-            return solve_piece(data, row + 1, 0);
+            return solve_piece(data, row + 1, 0); /* Advance to the next row */
         }
     } else if(data[row][column] & 0x80) { /* Static piece */
         return solve_piece(data, row, column + 1);
     } else {
         for(i = 1; i <= 9; ++i) {
             if(is_valid_move(data, row, column, i)) {
-                data[row][column] = i;
-                if(solve_piece(data, row, column + 1)) {
+                data[row][column] = i; /* Place piece */
+                if(solve_piece(data, row, column + 1)) { /* Advance to next column */
                     return 1;
                 }
-                data[row][column] = 0;
+                data[row][column] = 0; /* Failed => remove piece */
             }
         }
         return 0;
@@ -93,6 +93,7 @@ uint8_t solve_puzzle(char *filename) {
         return 0;
     }
 
+    /* Read puzzle data */
     for(i = 0; i < 9; ++i) {
         if(!fgets(line,sizeof(line),file)){
             fprintf(stderr, "Failed to read all lines in input.\n", filename);
@@ -110,6 +111,7 @@ uint8_t solve_puzzle(char *filename) {
     }
     fclose(file);
 
+    /* Solve the puzzle */
     start = clock();
     if(solve_piece(data, 0, 0)) {
         printf("Solution (found in %f) : \n", (clock() - start) / (CLK_TCK));
@@ -120,7 +122,7 @@ uint8_t solve_puzzle(char *filename) {
 }
 
 int main(int argcnt, char** args) {
-    printf("Sudoku solver v1.0 - Cedric Van Goethem");
+    printf("Sudoku solver v1.0 - Cedric Van Goethem\n");
     if(argcnt <= 1){
         fprintf(stderr, "Usage: Sudokan [file].txt\n");
         return 1;
